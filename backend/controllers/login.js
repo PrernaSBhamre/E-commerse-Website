@@ -19,7 +19,18 @@ module.exports.login = async (req, res) => {
     
             // Store JWT in session
             req.session.token = token;
-            res.status(200).json({ message: 'Login successful', token });
+            
+            // Explicitly save the session
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Session save error:', err);
+                    return res.status(500).json({ error: 'Failed to save session' });
+                }
+                
+                console.log('Session saved successfully for user:', user._id);
+                console.log('Session data:', req.session);
+                res.status(200).json({ message: 'Login successful', token });
+            });
         } else {
             res.status(401).json({ error: 'Invalid credentials' });
         }
@@ -52,3 +63,21 @@ module.exports.authenticate = async (req, res) => {
     });
   }
 };
+
+module.exports.logout = async (req, res) => {
+  try {
+    // 1️⃣ Clear session
+    req.session = null;
+
+    // 2️⃣ Send response
+    res.status(200).json({
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Internal server error during logout'
+    });
+  }
+};
+
+

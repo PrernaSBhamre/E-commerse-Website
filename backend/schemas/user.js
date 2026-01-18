@@ -13,12 +13,20 @@ const userSchema=new Schema({
     },
     password:{
         type:String,
-        required:true
+        required:true,
+        minlength: 6 // Password should be at least 6 characters
+    },
+    resetPasswordToken: {
+        type: String
+    },
+    resetPasswordExpire: {
+        type: Date
     },
     role:{
         type:String,
         enum:['user','admin'],
-        default:'user'
+        default:'user',
+        required:true
     },
     address:{
         type:[Object],

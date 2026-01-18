@@ -10,6 +10,7 @@ const {
     deleteProduct
 } = require('../controllers/product');
 const AsyncHandler = require('../middleware/AsyncHandler');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -22,14 +23,19 @@ router.get('/best-sellers', AsyncHandler(getMonthlyBestSellers));
 // GET New Arrival Products
 router.get('/new-arrivals', AsyncHandler(getNewArrivals));
 
-// CRUD Operations for Products
+// Public routes (no authentication required)
 router.route('/')
-    .get(AsyncHandler(getAllProducts))
-    .post(AsyncHandler(createProduct));
+    .get(AsyncHandler(getAllProducts));
 
 router.route('/:id')
-    .get(AsyncHandler(getProductById))
-    .put(AsyncHandler(updateProduct))
-    .delete(AsyncHandler(deleteProduct));
+    .get(AsyncHandler(getProductById));
+
+// Protected routes (require authentication)
+router.route('/')
+    .post(protect, authorize('admin'), AsyncHandler(createProduct));
+
+router.route('/:id')
+    .put(protect, authorize('admin'), AsyncHandler(updateProduct))
+    .delete(protect, authorize('admin'), AsyncHandler(deleteProduct));
 
 module.exports = router;

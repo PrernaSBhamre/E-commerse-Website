@@ -7,17 +7,23 @@ const {
     deleteCategory
 } = require('../controllers/category');
 const AsyncHandler = require('../middleware/AsyncHandler');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// CRUD Operations for Categories
+// Public routes (no authentication required)
 router.route('/')
-    .get(AsyncHandler(getAllCategories))
-    .post(AsyncHandler(createCategory));
+    .get(AsyncHandler(getAllCategories));
 
 router.route('/:id')
-    .get(AsyncHandler(getCategoryById))
-    .put(AsyncHandler(updateCategory))
-    .delete(AsyncHandler(deleteCategory));
+    .get(AsyncHandler(getCategoryById));
+
+// Protected routes (require authentication)
+router.route('/')
+    .post(protect, authorize('admin'), AsyncHandler(createCategory));
+
+router.route('/:id')
+    .put(protect, authorize('admin'), AsyncHandler(updateCategory))
+    .delete(protect, authorize('admin'), AsyncHandler(deleteCategory));
 
 module.exports = router;

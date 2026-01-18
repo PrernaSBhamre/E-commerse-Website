@@ -77,16 +77,20 @@
 ### Get All Products
 - **Endpoint**: `GET /products`
 - **Description**: Retrieve all products with pagination and sorting
+- **Authentication**: Public (No token required)
 - **Response**: Array of product objects
 
 ### Get Single Product
 - **Endpoint**: `GET /products/:id`
 - **Description**: Retrieve a specific product by ID
+- **Authentication**: Public (No token required)
 - **Response**: Single product object
 
 ### Create Product
 - **Endpoint**: `POST /products`
 - **Description**: Create a new product
+- **Authentication**: Protected (Requires admin token)
+- **Headers**: `Authorization: Bearer <admin_token>`
 - **Request Body**:
   ```json
   {
@@ -108,11 +112,15 @@
 ### Update Product
 - **Endpoint**: `PUT /products/:id`
 - **Description**: Update an existing product
+- **Authentication**: Protected (Requires admin token)
+- **Headers**: `Authorization: Bearer <admin_token>`
 - **Request Body**: Partial or full product object
 
 ### Delete Product
 - **Endpoint**: `DELETE /products/:id`
 - **Description**: Delete a product by ID
+- **Authentication**: Protected (Requires admin token)
+- **Headers**: `Authorization: Bearer <admin_token>`
 
 ### Get Active Flash Sale Products
 - **Endpoint**: `GET /products/flash-sales`
@@ -136,16 +144,20 @@
 ### Get All Categories
 - **Endpoint**: `GET /categories`
 - **Description**: Retrieve all product categories
+- **Authentication**: Public (No token required)
 - **Response**: Array of category objects
 
 ### Get Single Category
 - **Endpoint**: `GET /categories/:id`
 - **Description**: Retrieve a specific category by ID
+- **Authentication**: Public (No token required)
 - **Response**: Single category object
 
 ### Create Category
 - **Endpoint**: `POST /categories`
 - **Description**: Create a new product category
+- **Authentication**: Protected (Requires admin token)
+- **Headers**: `Authorization: Bearer <admin_token>`
 - **Request Body**:
   ```json
   {
@@ -157,11 +169,15 @@
 ### Update Category
 - **Endpoint**: `PUT /categories/:id`
 - **Description**: Update an existing category
+- **Authentication**: Protected (Requires admin token)
+- **Headers**: `Authorization: Bearer <admin_token>`
 - **Request Body**: Partial or full category object
 
 ### Delete Category
 - **Endpoint**: `DELETE /categories/:id`
 - **Description**: Delete a category by ID
+- **Authentication**: Protected (Requires admin token)
+- **Headers**: `Authorization: Bearer <admin_token>`
 
 ---
 
@@ -238,6 +254,16 @@ For protected routes, include the JWT token in the Authorization header:
 ```
 Authorization: Bearer <jwt_token>
 ```
+
+### How to Get a Token:
+1. Register a new user with `POST /auth/register`
+2. Login with `POST /auth/login` to receive a JWT token
+3. Use this token in the Authorization header for protected routes
+
+### Token Storage:
+- Store the received token in your frontend (localStorage, sessionStorage, or secure cookie)
+- Include the token in every request to protected endpoints
+- Tokens expire after 1 day (as configured in the backend)
 
 ## Notes
 
