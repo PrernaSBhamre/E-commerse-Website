@@ -29,7 +29,7 @@ module.exports.register = async (req, res) => {
             createdAt
         });
         
-        console.log(user);
+
         
         if (user) {
             res.status(201).json({
@@ -42,7 +42,7 @@ module.exports.register = async (req, res) => {
             });
         }
     } catch (error) {
-        console.error(error);
+
         res.status(500).json({
             message: "Server error during user registration",
             error: error.message

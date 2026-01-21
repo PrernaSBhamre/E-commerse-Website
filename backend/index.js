@@ -16,9 +16,13 @@ dotenv.config();
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL);
-    console.log("Connected to MongoDB");
+
+    
+    // Run product data initialization
+    const initializeProductData = require('./initializeProductData');
+    initializeProductData();
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+
   }
 };
 connectDB();
@@ -28,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(cors({
-  origin: "http://localhost:3000", // frontend URL
+  origin: ["http://localhost:3000", "http://localhost:5173"], // frontend URLs
   credentials: true
 }));
 
@@ -53,11 +57,7 @@ app.use(session({
 }));
 
 // Debug middleware to log session info
-app.use((req, res, next) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session data:', req.session);
-  next();
-});
+
 
 /* -------------------- ROUTES -------------------- */
 app.use('/api/auth', authRoute);
@@ -75,11 +75,11 @@ app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
-  console.error(err);
+
   res.status(500).json({ message: err.message });
 });
 
 /* -------------------- SERVER -------------------- */
 app.listen(5000, () => {
-  console.log("Backend running on 5000 port");
+
 });

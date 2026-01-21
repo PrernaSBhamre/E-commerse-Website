@@ -26,9 +26,9 @@ const updateProductRatings = async (productId) => {
             totalReviews: reviews.length
         });
         
-        console.log(`Updated ratings for product ${productId}: ${averageRating.toFixed(1)} (${reviews.length} reviews)`);
+
     } catch (error) {
-        console.error('Error updating product ratings:', error);
+
     }
 };
 
@@ -72,9 +72,9 @@ const updateProductDiscountInfo = async (productId) => {
             discountInfo: discountInfo
         });
         
-        console.log(`Updated discount info for product ${productId}`);
+
     } catch (error) {
-        console.error('Error updating product discount info:', error);
+
     }
 };
 
@@ -88,9 +88,9 @@ const updateAllProductsInfo = async () => {
             await updateProductDiscountInfo(product._id);
         }
         
-        console.log('Updated ratings and discounts for all products');
+
     } catch (error) {
-        console.error('Error updating all products info:', error);
+
     }
 };
 

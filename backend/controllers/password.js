@@ -39,7 +39,7 @@ module.exports.forgotPassword = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('Forgot password error:', error);
+
         return res.status(500).json({
             message: 'Internal server error during password reset'
         });
@@ -84,7 +84,7 @@ module.exports.resetPassword = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('Reset password error:', error);
+
         return res.status(500).json({
             message: 'Internal server error during password reset'
         });
