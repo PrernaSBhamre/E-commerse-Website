@@ -21,7 +21,7 @@ module.exports.getActiveFlashSales = async (req, res) => {
             data: flashSaleProducts
         });
     } catch (error) {
-        console.error('Error fetching flash sale products:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching flash sale products'
@@ -32,64 +32,20 @@ module.exports.getActiveFlashSales = async (req, res) => {
 // Get this month's best sellers
 module.exports.getMonthlyBestSellers = async (req, res) => {
     try {
-        // Calculate start and end of current month
-        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-
-        // Find orders from this month that are paid
-        const orders = await Order.find({
-            createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-            paymentstatus: 'paid'
-        }).populate({
-            path: 'products.product',
-            model: 'Product'
-        });
-
-        // Aggregate sales counts by product
-        const salesMap = {};
+        // Get top selling products based on salesCount field
+        const bestSellerProducts = await Product.find({})
+            .populate('category')
+            .select('-__v')
+            .sort({ salesCount: -1 }) // Sort by salesCount in descending order
+            .limit(10); // Top 10 best sellers
         
-        orders.forEach(order => {
-            order.products.forEach(item => {
-                const productId = item.product._id.toString();
-                if (salesMap[productId]) {
-                    salesMap[productId] += item.quantity;
-                } else {
-                    salesMap[productId] = item.quantity;
-                }
-            });
-        });
-
-        // Convert to array and sort by sales count
-        const bestSellers = Object.entries(salesMap)
-            .map(([productId, totalQuantity]) => ({
-                productId,
-                totalQuantity
-            }))
-            .sort((a, b) => b.totalQuantity - a.totalQuantity)
-            .slice(0, 10); // Top 10 best sellers
-
-        // Get product details for best sellers
-        const bestSellerProducts = [];
-        for (const bestSeller of bestSellers) {
-            const product = await Product.findById(bestSeller.productId)
-                .populate('category')
-                .select('-__v');
-            
-            if (product) {
-                bestSellerProducts.push({
-                    ...product.toObject(),
-                    monthlySales: bestSeller.totalQuantity
-                });
-            }
-        }
-
         res.status(200).json({
             success: true,
             count: bestSellerProducts.length,
             data: bestSellerProducts
         });
     } catch (error) {
-        console.error('Error fetching monthly best sellers:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching best sellers'
@@ -112,7 +68,7 @@ module.exports.getNewArrivals = async (req, res) => {
             data: newArrivalProducts
         });
     } catch (error) {
-        console.error('Error fetching new arrivals:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching new arrivals'
@@ -131,7 +87,7 @@ module.exports.updateSalesCount = async (order) => {
             );
         }
     } catch (error) {
-        console.error('Error updating sales count:', error);
+
     }
 };
 
@@ -149,10 +105,43 @@ module.exports.getAllProducts = async (req, res) => {
             data: products
         });
     } catch (error) {
-        console.error('Error fetching products:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching products'
+        });
+    }
+};
+
+// Get products by category ID
+module.exports.getProductsByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.categoryId;
+        
+        // Validate if categoryId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid category ID format'
+            });
+        }
+        
+        const products = await Product.find({ category: categoryId })
+            .populate('category')
+            .select('-__v')
+            .sort({ createdAt: -1 });
+        
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            categoryId: categoryId,
+            data: products
+        });
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching products by category'
         });
     }
 };
@@ -176,7 +165,7 @@ module.exports.getProductById = async (req, res) => {
             data: product
         });
     } catch (error) {
-        console.error('Error fetching product:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching product'
@@ -209,7 +198,7 @@ module.exports.createProduct = async (req, res) => {
             data: product
         });
     } catch (error) {
-        console.error('Error creating product:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while creating product'
@@ -248,7 +237,7 @@ module.exports.updateProduct = async (req, res) => {
             data: product
         });
     } catch (error) {
-        console.error('Error updating product:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while updating product'
@@ -273,7 +262,7 @@ module.exports.deleteProduct = async (req, res) => {
             message: 'Product deleted successfully'
         });
     } catch (error) {
-        console.error('Error deleting product:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while deleting product'

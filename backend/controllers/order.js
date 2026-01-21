@@ -24,7 +24,7 @@ module.exports.createOrder = async (req, res) => {
             data: order
         });
     } catch (error) {
-        console.error('Error creating order:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while creating order'
@@ -64,7 +64,7 @@ module.exports.updateOrderStatus = async (req, res) => {
             data: order
         });
     } catch (error) {
-        console.error('Error updating order status:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while updating order status'
@@ -87,7 +87,7 @@ module.exports.getUserOrders = async (req, res) => {
             data: orders
         });
     } catch (error) {
-        console.error('Error fetching user orders:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching orders'

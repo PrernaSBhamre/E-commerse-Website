@@ -37,7 +37,7 @@ module.exports.createReview = async (req, res) => {
             data: review
         });
     } catch (error) {
-        console.error('Error creating review:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while creating review'
@@ -60,7 +60,7 @@ module.exports.getProductReviews = async (req, res) => {
             data: reviews
         });
     } catch (error) {
-        console.error('Error fetching product reviews:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching reviews'
@@ -96,7 +96,7 @@ module.exports.updateReview = async (req, res) => {
             data: review
         });
     } catch (error) {
-        console.error('Error updating review:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while updating review'
@@ -130,7 +130,7 @@ module.exports.deleteReview = async (req, res) => {
             message: 'Review deleted successfully'
         });
     } catch (error) {
-        console.error('Error deleting review:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while deleting review'

@@ -1,15 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const categories = [
-  { name: 'Phones', icon: 'M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h10.5A2.25 2.25 0 0021 20.25V3.75a2.25 2.25 0 00-2.25-2.25H10.5z' },
-  { name: 'Computers', icon: 'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25' },
-  { name: 'SmartWatch', icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' }, // Simplified clock icon for smartwatch
-  { name: 'Camera', icon: 'M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z' },
-  { name: 'HeadPhones', icon: 'M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z' }, // Audio ish
-  { name: 'Gaming', icon: 'M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z' },
-];
+// Icon mapping for different category names
+const getCategoryIcon = (categoryName) => {
+  const iconMap = {
+    'Electronics': 'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25',
+    'Clothing': 'M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h10.5A2.25 2.25 0 0021 20.25V3.75a2.25 2.25 0 00-2.25-2.25H10.5z',
+    'Home & Kitchen': 'M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z',
+    'Books': 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25',
+    'Sports': 'M15.75 10.356h-3.75v3.75h3.75v-3.75zm-3.75 0H8.25v3.75h3.75v-3.75zM8.25 10.356H4.5v3.75h3.75v-3.75z'
+  };
+  
+  return iconMap[categoryName] || 'M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'; // default icon
+};
 
 const Categories = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:5000/api/categories');
+       
+        setCategories(response.data.data || response.data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        setError('Failed to load categories');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 mb-20">
+        <div className="text-center py-10">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+          <p className="mt-4 text-gray-600">Loading categories...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 mb-20">
+        <div className="text-center py-10 text-red-600">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 mb-20">
        {/* Premium Header (No Shadow) */}
@@ -38,14 +88,21 @@ const Categories = () => {
 
          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
             {categories.map((cat, index) => (
-                <div key={index} className="group cursor-pointer border border-red-500 rounded-lg h-[145px] flex flex-col items-center justify-center gap-4 transition-all duration-300 bg-red-500 hover:bg-white hover:border-red-600 hover:shadow-lg hover:shadow-red-200 hover:-translate-y-2 shadow-sm relative overflow-hidden">
+                <div 
+                  key={cat._id || index} 
+                  className="group cursor-pointer border border-red-500 rounded-lg h-[145px] flex flex-col items-center justify-center gap-4 transition-all duration-300 bg-red-500 hover:bg-white hover:border-red-600 hover:shadow-lg hover:shadow-red-200 hover:-translate-y-2 shadow-sm relative overflow-hidden"
+                  onClick={() => {
+                    console.log('Direct navigation to category products from grid:', cat._id);
+                    navigate(`/categories/${cat._id}/products`);
+                  }}
+                >
                     
                     {/* Decorative Circle (Subtle texture on the red background) */}
                     <div className="absolute w-20 h-20 bg-white/10 rounded-full blur-2xl opacity-100 group-hover:opacity-0 transition-opacity duration-300"></div>
 
                     {/* Icon - Minimal Line Art */}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 text-white group-hover:text-red-600 transition-colors duration-300 z-10">
-                      <path strokeLinecap="round" strokeLinejoin="round" d={cat.icon} />
+                      <path strokeLinecap="round" strokeLinejoin="round" d={getCategoryIcon(cat.name)} />
                     </svg>
                     
                     {/* Label */}

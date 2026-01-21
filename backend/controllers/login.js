@@ -23,19 +23,19 @@ module.exports.login = async (req, res) => {
             // Explicitly save the session
             req.session.save((err) => {
                 if (err) {
-                    console.error('Session save error:', err);
+
                     return res.status(500).json({ error: 'Failed to save session' });
                 }
                 
-                console.log('Session saved successfully for user:', user._id);
-                console.log('Session data:', req.session);
+
+
                 res.status(200).json({ message: 'Login successful', token });
             });
         } else {
             res.status(401).json({ error: 'Invalid credentials' });
         }
     } catch (error) {
-        console.error('Login error:', error);
+
         res.status(500).json({ error: 'Internal server error during login' });
     }
 };

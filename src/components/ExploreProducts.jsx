@@ -1,76 +1,103 @@
-import React from 'react';
-
-const exploreProducts = [
-  {
-    id: 1,
-    name: "Breed Dry Dog Food",
-    price: 100,
-    rating: 35,
-    image: "https://m.media-amazon.com/images/I/81+mXyq4+jL._AC_SX679_.jpg", 
-    isNew: false
-  },
-  {
-    id: 2,
-    name: "CANON EOS DSLR Camera",
-    price: 360,
-    rating: 95,
-    image: "https://m.media-amazon.com/images/I/71EWRyqzw0L._AC_SX679_.jpg",
-    isNew: false
-  },
-  {
-    id: 3,
-    name: "ASUS FHD Gaming Laptop",
-    price: 700,
-    rating: 325,
-    image: "https://m.media-amazon.com/images/I/81w+-iM3B0L._AC_SX679_.jpg",
-    isNew: false
-  },
-  {
-    id: 4,
-    name: "Curology Product Set ",
-    price: 500,
-    rating: 145,
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1887&auto=format&fit=crop",
-    isNew: false
-  },
-  {
-    id: 5,
-    name: "Kids Electric Car",
-    price: 960,
-    rating: 65,
-    image: "https://m.media-amazon.com/images/I/61kMLykR7IL._AC_SX679_.jpg",
-    isNew: true
-  },
-  {
-    id: 6,
-    name: "Jr. Zoom Soccer Cleats",
-    price: 1160,
-    rating: 35,
-    image: "https://m.media-amazon.com/images/I/51+P9Cg+jUL._AC_SY675_.jpg",
-    isNew: true,
-    colors: ['bg-yellow-400', 'bg-red-500']
-  },
-  {
-    id: 7,
-    name: "GP11 Shooter USB Gamepad",
-    price: 660,
-    rating: 55,
-    image: "https://m.media-amazon.com/images/I/61s+I6X6KqL._AC_SX679_.jpg",
-    isNew: true,
-    colors: ['bg-black', 'bg-red-500']
-  },
-  {
-    id: 8,
-    name: "Quilted Satin Jacket",
-    price: 660,
-    rating: 55,
-    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1936&auto=format&fit=crop",
-    isNew: false,
-    colors: ['bg-green-700', 'bg-red-500']
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ExploreProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await axios.get('http://localhost:5000/api/products');
+        console.log('Explore Products Response:', response.data);
+        
+        // Handle the API response structure
+        const allProducts = response.data.data || [];
+        setProducts(allProducts);
+        
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products');
+        // Set empty array if API fails
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 mb-20">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10 p-6 bg-gradient-to-r from-red-50 via-white to-white rounded-xl border border-red-100 border-l-4 border-l-red-600 animate-fade-in-up">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-1 bg-red-600 rounded-full animate-pulse"></span>
+              <h2 className="text-red-600 font-semibold text-sm tracking-wide uppercase">Our Products</h2>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 leading-tight">Explore Our <span className="text-red-600">Products</span></h1>
+          </div>
+          <div className="flex gap-2">
+            <button className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center hover:bg-red-100 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-red-600">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center shadow-md shadow-red-200">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-white">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-8">
+          {[1, 2, 3, 4].map((item) => (
+            <div key={item} className="group cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div className="bg-gray-50 h-[250px] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+              </div>
+              <div className="p-4">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 mb-20">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V13.5zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V18zm2.498-6.75h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V13.5zm0 2.25h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V18zm2.504-6.75h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V13.5zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V18z" />
+          </svg>
+          <h2 className="mt-2 text-xl font-bold text-red-800">Error Loading Products</h2>
+          <p className="mt-1 text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 mb-20">
       {/* Premium Header (No Shadow) */}
@@ -97,32 +124,37 @@ const ExploreProducts = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-8">
-        {exploreProducts.map((product) => (
-          <div key={product.id} className="group cursor-pointer bg-white rounded-xl border border-gray-100 hover:border-red-500/30 overflow-hidden hover:shadow-[0_8px_30px_rgb(220,38,38,0.15)] transition-all duration-500">
-            {/* Image Section */}
-            <div className="bg-gray-50 h-[250px] relative flex items-center justify-center p-6 transition-colors duration-500 group-hover:bg-red-50/30 border-b border-gray-50 group-hover:border-red-100">
-                {product.isNew && (
-                     <span className="absolute top-3 left-3 bg-[#00FF66] text-white text-[10px] px-2 py-1 rounded-[4px] font-bold shadow-sm uppercase tracking-wider">NEW</span>
-                )}
+        {products && products.length > 0 ? (
+          products.slice(0, 4).map((product) => (
+            <div key={product._id} className="group cursor-pointer bg-white rounded-xl border border-gray-100 hover:border-red-500/30 overflow-hidden hover:shadow-[0_8px_30px_rgb(220,38,38,0.15)] transition-all duration-500">
+              {/* Image Section */}
+              <div className="bg-gray-50 h-[250px] relative flex items-center justify-center p-6 transition-colors duration-500 group-hover:bg-red-50/30 border-b border-gray-50 group-hover:border-red-100">
+                  {/* New Badge - check if product is recently added */}
+                  {product.createdAt && new Date(product.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
+                    <span className="absolute top-3 left-3 bg-[#00FF66] text-white text-[10px] px-2 py-1 rounded-[4px] font-bold shadow-sm uppercase tracking-wider">NEW</span>
+                  )}
 
-               <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 translate-x-4 group-hover:translate-x-0">
-                    <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300 shadow-md border border-gray-100 hover:border-red-600 group/btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
-                    </button>
-                     <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300 shadow-md border border-gray-100 hover:border-red-600 group/btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
-                </div>
-              
+                 <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 translate-x-4 group-hover:translate-x-0">
+                      <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300 shadow-md border border-gray-100 hover:border-red-600 group/btn">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                          </svg>
+                      </button>
+                       <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300 shadow-md border border-gray-100 hover:border-red-600 group/btn">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                      </button>
+                  </div>
+                
               <img
-                src={product.image}
+                src={product.images && product.images[0] ? product.images[0] : product.image}
                 alt={product.name}
                 className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-2 drop-shadow-sm"
+                onError={(e) => {
+                  e.target.src = 'https://placehold.co/400x400?text=No+Image';
+                }}
               />
             </div>
             
@@ -132,25 +164,24 @@ const ExploreProducts = () => {
                     <h3 className="font-bold text-gray-800 text-sm group-hover:text-red-600 transition-colors line-clamp-1">{product.name}</h3>
                     
                     <div className="flex items-center gap-3">
-                        <span className="text-red-600 font-bold text-lg">₹{product.price}</span>
+                        <span className="text-red-600 font-bold text-lg">{formatPrice(product.price)}</span>
                          <div className="flex items-center gap-1.5">
                          <div className="flex text-yellow-500">
                             {[...Array(5)].map((_, i) => (
-                                <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={i < 4 ? "currentColor" : "#E5E7EB"} stroke="" className="w-3.5 h-3.5">
+                                <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={i < Math.floor((product.averageRating ) * 5) ? "currentColor" : "#E5E7EB"} stroke="" className="w-3.5 h-3.5">
                                     <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
                                 </svg>
                             ))}
                         </div>
-                        <span className="text-gray-400 text-xs font-medium">({product.rating})</span>
+                        <span className="text-gray-400 text-xs font-medium">⭐ {(product.averageRating ).toFixed(1)}</span>
                     </div>
                     </div>
 
-                    {product.colors && (
-                        <div className="flex gap-2 mt-1">
-                            {product.colors.map((color, idx) => (
-                                 <div key={idx} className={`w-3.5 h-3.5 rounded-full ${color} border border-gray-300 cursor-pointer hover:scale-125 transition-transform`}></div>
-                            ))}
-                        </div>
+                    {/* Show category if available */}
+                    {product.category && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        {typeof product.category === 'object' ? product.category.name : product.category}
+                      </div>
                     )}
                 </div>
 
@@ -165,11 +196,26 @@ const ExploreProducts = () => {
                 </div>
             </div>
           </div>
-        ))}
+        ))
+      ) : (
+        // Empty state when no products
+        <div className="col-span-full text-center py-12">
+          <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 border-2 border-dashed border-red-200 max-w-md mx-auto">
+            <div className="text-6xl mb-4">📦</div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">No Products Available</h3>
+            <p className="text-gray-600 mb-6">There are currently no products in the store. Check back soon!</p>
+          </div>
+        </div>
+      )}
       </div>
       
        <div className="flex justify-center mt-6">
-          <button className="bg-red-600 text-white px-8 py-3 rounded cursor-pointer hover:bg-red-700 transition-all font-medium">View All Products</button>
+          <button 
+            onClick={() => navigate('/all-products')}
+            className="bg-red-600 text-white px-8 py-3 rounded cursor-pointer hover:bg-red-700 transition-all font-medium"
+          >
+            View All Products
+          </button>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ const {
     getNewArrivals,
     getAllProducts,
     getProductById,
+    getProductsByCategory,
     createProduct,
     updateProduct,
     deleteProduct
@@ -13,6 +14,9 @@ const AsyncHandler = require('../middleware/AsyncHandler');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
+
+// GET Products by Category ID
+router.get('/category/:categoryId', AsyncHandler(getProductsByCategory));
 
 // GET Active Flash Sale Products
 router.get('/flash-sales', AsyncHandler(getActiveFlashSales));

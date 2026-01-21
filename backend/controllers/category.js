@@ -13,7 +13,7 @@ module.exports.getAllCategories = async (req, res) => {
             data: categories
         });
     } catch (error) {
-        console.error('Error fetching categories:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching categories'
@@ -39,7 +39,7 @@ module.exports.getCategoryById = async (req, res) => {
             data: category
         });
     } catch (error) {
-        console.error('Error fetching category:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while fetching category'
@@ -62,7 +62,7 @@ module.exports.createCategory = async (req, res) => {
             data: category
         });
     } catch (error) {
-        console.error('Error creating category:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while creating category'
@@ -101,7 +101,7 @@ module.exports.updateCategory = async (req, res) => {
             data: category
         });
     } catch (error) {
-        console.error('Error updating category:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while updating category'
@@ -126,7 +126,7 @@ module.exports.deleteCategory = async (req, res) => {
             message: 'Category deleted successfully'
         });
     } catch (error) {
-        console.error('Error deleting category:', error);
+
         res.status(500).json({
             success: false,
             message: 'Server error while deleting category'

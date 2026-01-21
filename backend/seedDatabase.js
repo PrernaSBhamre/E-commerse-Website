@@ -1,33 +1,70 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
 const { Product } = require('./schemas/product');
 const { Category } = require('./schemas/category');
-const { updateAllProductsInfo } = require('./utils/productHelpers');
+const { connectDB } = require('./index');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
-async function initializeProductData() {
+async function seedDatabase() {
   try {
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGO_URL);
+    console.log('Connected to MongoDB');
 
-
-    // Clear existing products
+    // Clear existing data
+    await Category.deleteMany({});
     await Product.deleteMany({});
+    console.log('Cleared existing categories and products');
 
-    
-    // Fetch all categories to populate product category references
-    const categories = await Category.find({});
-    if (categories.length === 0) {
+    // Sample categories
+    const sampleCategories = [
+      {
+        name: "Electronics",
+        image: "https://via.placeholder.com/300x200?text=Electronics",
+        description: "Electronic devices and gadgets"
+      },
+      {
+        name: "Clothing & Accessories",
+        image: "https://via.placeholder.com/300x200?text=Clothing",
+        description: "Fashion and apparel items"
+      },
+      {
+        name: "Home & Furniture",
+        image: "https://via.placeholder.com/300x200?text=Home+Furniture",
+        description: "Home decor and furniture"
+      },
+      {
+        name: "Beauty & Health",
+        image: "https://via.placeholder.com/300x200?text=Beauty+Health",
+        description: "Beauty and health products"
+      },
+      {
+        name: "Sports & Fitness",
+        image: "https://via.placeholder.com/300x200?text=Sports+Fitness",
+        description: "Sports and fitness equipment"
+      },
+      {
+        name: "Toys & Games",
+        image: "https://via.placeholder.com/300x200?text=Toys+Games",
+        description: "Toys and games for all ages"
+      },
+      {
+        name: "Pets",
+        image: "https://via.placeholder.com/300x200?text=Pets",
+        description: "Pet supplies and accessories"
+      }
+    ];
 
-      return;
-    }
-    
+    // Insert categories
+    const categories = await Category.insertMany(sampleCategories);
+    console.log(`Inserted ${categories.length} categories`);
+
     // Create a map of category names to ObjectIds
     const categoryMap = {};
     categories.forEach(category => {
       categoryMap[category.name.toLowerCase()] = category._id;
     });
-    
-    // Define sample products with actual product data
+
+    // Sample products with comprehensive data for all sections
     const sampleProducts = [
       {
         name: "HAVIT HV-G92 Gamepad",
@@ -680,48 +717,46 @@ async function initializeProductData() {
         createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) // 4 days ago
       }
     ];
-    
+
     // Insert the sample products
     await Product.insertMany(sampleProducts);
+    console.log(`Successfully inserted ${sampleProducts.length} products`);
 
-    
-    // Log some statistics
+    // Log final statistics
+    const totalCategories = await Category.countDocuments();
     const totalProducts = await Product.countDocuments();
+    console.log(`Final counts - Categories: ${totalCategories}, Products: ${totalProducts}`);
 
-    
     // Count flash sales
     const flashSalesCount = await Product.countDocuments({ 'flashSale.isActive': true });
+    console.log(`Products on flash sale: ${flashSalesCount}`);
 
-    
     // Count best sellers
     const bestSellers = await Product.find().sort({ salesCount: -1 }).limit(5);
-
+    console.log('Top 5 best sellers:');
     bestSellers.forEach(product => {
-
+      console.log(`  - ${product.name}: ${product.salesCount} sales`);
     });
-    
+
     // Count new arrivals
     const newArrivals = await Product.find().sort({ createdAt: -1 }).limit(5);
-
+    console.log('Top 5 new arrivals:');
     newArrivals.forEach(product => {
-
+      console.log(`  - ${product.name}: Added on ${product.createdAt.toDateString()}`);
     });
 
-    // Update all product ratings and discount information
-    await updateAllProductsInfo();
+    console.log('Database seeding completed successfully!');
 
-
-    
     // Close connection
     await mongoose.connection.close();
   } catch (error) {
-
+    console.error('Error seeding database:', error);
   }
 }
 
-// Run the initialization
+// Run the seeding function
 if (require.main === module) {
-    initializeProductData();
+  seedDatabase();
 }
 
-module.exports = initializeProductData;
+module.exports = seedDatabase;
