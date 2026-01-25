@@ -159,33 +159,37 @@ const AllProducts = () => {
                 key={product._id} 
                 className="group cursor-pointer bg-white rounded-2xl border border-gray-100 hover:border-red-500/30 overflow-hidden hover:shadow-[0_20px_50px_rgba(220,38,38,0.1)] transition-all duration-700 animate-fade-in-up"
               >
-                <div className="bg-gray-50/50 h-[280px] relative flex items-center justify-center p-8 transition-colors duration-500 group-hover:bg-red-50/20 border-b border-gray-50 group-hover:border-red-50">
-                  <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                    <button className="w-9 h-9 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shadow-md border border-gray-100">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                      </svg>
-                    </button>
+                <Link to={`/product/${product._id}`}>
+                  <div className="bg-gray-50/50 h-[280px] relative flex items-center justify-center p-8 transition-colors duration-500 group-hover:bg-red-50/20 border-b border-gray-50 group-hover:border-red-50">
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                      <button className="w-9 h-9 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shadow-md border border-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <img 
+                      src={product.images?.[0] || product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+                      onError={(e) => { e.target.src = 'https://placehold.co/400x400?text=Product'; }}
+                    />
                   </div>
 
-                  <img 
-                    src={product.images?.[0] || product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
-                    onError={(e) => { e.target.src = 'https://placehold.co/400x400?text=Product'; }}
-                  />
-                </div>
-
-                <div className="p-6 flex flex-col gap-4">
-                  <div className="space-y-2">
-                    <h3 className="font-bold text-base text-gray-800 line-clamp-2 group-hover:text-red-600 transition-colors uppercase tracking-tight">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl font-black text-red-600">{formatPrice(product.price)}</span>
+                  <div className="p-6 flex flex-col gap-4">
+                    <div className="space-y-2">
+                      <h3 className="font-bold text-base text-gray-800 line-clamp-2 group-hover:text-red-600 transition-colors uppercase tracking-tight">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl font-black text-red-600">{formatPrice(product.price)}</span>
+                      </div>
                     </div>
                   </div>
+                </Link>
 
+                <div className="px-6 pb-6">
                   {/* Add to Cart - Hidden by default, shown on hover */}
                   <button className="w-full bg-black hover:bg-red-600 text-white py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-500 flex items-center justify-center gap-3 shadow-sm hover:shadow-xl group/btn active:scale-95 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover/btn:scale-125 transition-transform duration-500">
@@ -195,6 +199,7 @@ const AllProducts = () => {
                   </button>
                 </div>
               </div>
+
             ))}
           </div>
         ) : (

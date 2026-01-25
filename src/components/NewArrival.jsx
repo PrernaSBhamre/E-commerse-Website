@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const NewArrival = () => {
@@ -90,7 +91,7 @@ const NewArrival = () => {
 
         {/* Left Large Item - First New Arrival */}
         {products.length > 0 && (
-          <div className="md:col-span-2 bg-black rounded-xl relative overflow-hidden group cursor-pointer border border-gray-800 hover:border-red-600 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(220,38,38,0.3)]">
+          <Link to={`/product/${products[0]._id}`} className="md:col-span-2 bg-black rounded-xl relative overflow-hidden group cursor-pointer border border-gray-800 hover:border-red-600 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(220,38,38,0.3)]">
             <img
               src={products[0].images && products[0].images[0] ? products[0].images[0] : 'https://placehold.co/600x400?text=No+Image'}
               alt={products[0].name}
@@ -105,9 +106,9 @@ const NewArrival = () => {
             <div className="absolute bottom-8 left-8 max-w-xs z-10 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
               <h3 className="text-2xl font-bold mb-2 text-white">{products[0].name}</h3>
               <p className="text-gray-300 text-sm mb-4 line-clamp-2">{products[0].description || 'New product'}</p>
-              <button className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 hover:text-red-500 transition-colors">Shop Now</button>
+              <span className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 group-hover:text-red-500 transition-colors">Shop Now</span>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Right Column */}
@@ -115,7 +116,7 @@ const NewArrival = () => {
 
           {/* Top Full Width - Second New Arrival */}
           {products.length > 1 && (
-            <div className="col-span-2 bg-[#0D0D0D] rounded-xl relative overflow-hidden group cursor-pointer border border-gray-800 hover:border-red-600 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(220,38,38,0.3)]">
+            <Link to={`/product/${products[1]._id}`} className="col-span-2 bg-[#0D0D0D] rounded-xl relative overflow-hidden group cursor-pointer border border-gray-800 hover:border-red-600 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(220,38,38,0.3)]">
                 <img
                   src={products[1].images && products[1].images[0] ? products[1].images[0] : 'https://placehold.co/600x400?text=No+Image'}
                   alt={products[1].name}
@@ -129,14 +130,14 @@ const NewArrival = () => {
                 <div className="absolute bottom-8 left-8 z-10 max-w-xs translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                     <h3 className="text-xl font-bold mb-2 text-white">{products[1].name}</h3>
                     <p className="text-gray-300 text-xs mb-4">{products[1].description || 'New product'}</p>
-                    <button className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 hover:text-red-500 transition-colors">Shop Now</button>
+                    <span className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 group-hover:text-red-500 transition-colors">Shop Now</span>
                 </div>
-            </div>
+            </Link>
           )}
 
           {/* Bottom Row - Remaining Products */}
           {products.slice(2, 4).map((product, index) => (
-            <div key={product._id} className="bg-black rounded-xl relative overflow-hidden group cursor-pointer border border-gray-800 hover:border-red-600 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(220,38,38,0.3)] p-4 flex justify-center items-center">
+            <Link to={`/product/${product._id}`} key={product._id} className="bg-black rounded-xl relative overflow-hidden group cursor-pointer border border-gray-800 hover:border-red-600 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(220,38,38,0.3)] p-4 flex justify-center items-center">
               <div className="absolute inset-0 bg-radial-gradient from-red-900/20 to-black z-0"></div>
               <img
                 src={product.images && product.images[0] ? product.images[0] : 'https://placehold.co/600x400?text=No+Image'}
@@ -149,9 +150,9 @@ const NewArrival = () => {
                <div className="absolute bottom-4 left-4 z-10 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                 <h3 className="text-lg font-bold mb-1 text-white">{product.name}</h3>
                 <p className="text-gray-300 text-xs mb-2">{product.description ? product.description.substring(0, 30) + '...' : 'New product'}</p>
-                <button className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 hover:text-red-500 transition-colors">Shop Now</button>
+                <span className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 group-hover:text-red-500 transition-colors">Shop Now</span>
               </div>
-            </div>
+            </Link>
           ))}
 
           {/* Fill empty slots if needed */}
