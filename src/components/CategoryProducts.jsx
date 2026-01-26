@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import { useCart } from './CartContext';
 
 const CategoryProducts = () => {
+  const { addToCart } = useCart();
   const { categoryId } = useParams();
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState(null);
@@ -93,6 +95,10 @@ const CategoryProducts = () => {
               </Link>
               <div className="p-4 pt-0">
                 <button 
+                  onClick={() => {
+                    addToCart(product);
+                    alert(`${product.name} added to cart!`);
+                  }}
                   className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
                     product.stock > 0 ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}

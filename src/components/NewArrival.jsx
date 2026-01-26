@@ -105,8 +105,8 @@ const NewArrival = () => {
 
             <div className="absolute bottom-8 left-8 max-w-xs z-10 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
               <h3 className="text-2xl font-bold mb-2 text-white">{products[0].name}</h3>
-              <p className="text-gray-300 text-sm mb-4 line-clamp-2">{products[0].description || 'New product'}</p>
-              <span className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 group-hover:text-red-500 transition-colors">Shop Now</span>
+              <p className="text-gray-300 text-sm mb-6 line-clamp-2">{products[0].description || 'New product'}</p>
+              <span className="bg-[#DB4444] text-white px-8 py-3 rounded-sm font-bold text-xs uppercase tracking-widest group-hover:bg-red-700 transition-all shadow-lg inline-block">Shop Now</span>
             </div>
           </Link>
         )}
@@ -129,8 +129,8 @@ const NewArrival = () => {
 
                 <div className="absolute bottom-8 left-8 z-10 max-w-xs translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                     <h3 className="text-xl font-bold mb-2 text-white">{products[1].name}</h3>
-                    <p className="text-gray-300 text-xs mb-4">{products[1].description || 'New product'}</p>
-                    <span className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 group-hover:text-red-500 transition-colors">Shop Now</span>
+                    <p className="text-gray-300 text-xs mb-6">{products[1].description || 'New product'}</p>
+                    <span className="bg-[#DB4444] text-white px-6 py-2.5 rounded-sm font-bold text-[10px] uppercase tracking-widest group-hover:bg-red-700 transition-all shadow-md inline-block">Shop Now</span>
                 </div>
             </Link>
           )}
@@ -149,8 +149,8 @@ const NewArrival = () => {
               />
                <div className="absolute bottom-4 left-4 z-10 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                 <h3 className="text-lg font-bold mb-1 text-white">{product.name}</h3>
-                <p className="text-gray-300 text-xs mb-2">{product.description ? product.description.substring(0, 30) + '...' : 'New product'}</p>
-                <span className="text-white font-medium underline decoration-red-600 decoration-2 underline-offset-4 group-hover:text-red-500 transition-colors">Shop Now</span>
+                <p className="text-gray-300 text-[10px] mb-4">{product.description ? product.description.substring(0, 30) + '...' : 'New product'}</p>
+                <span className="bg-[#DB4444] text-white px-4 py-2 rounded-sm font-bold text-[10px] uppercase tracking-widest group-hover:bg-red-700 transition-all shadow-sm inline-block">Shop Now</span>
               </div>
             </Link>
           ))}

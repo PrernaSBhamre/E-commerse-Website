@@ -237,12 +237,12 @@ const Checkout = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <span className="font-medium">${product.price * quantity}</span>
+                                <span className="font-medium">₹{product.price * quantity}</span>
                             </div>
 
                             <div className="border-b border-gray-300 py-4 flex justify-between">
                                 <span>Subtotal:</span>
-                                <span>${subtotal}</span>
+                                <span>₹{subtotal}</span>
                             </div>
 
                             <div className="border-b border-gray-300 py-4 flex justify-between">
@@ -252,7 +252,7 @@ const Checkout = () => {
 
                             <div className="py-4 flex justify-between font-bold text-lg">
                                 <span>Total:</span>
-                                <span>${total}</span>
+                                <span>₹{total}</span>
                             </div>
                         </div>
 
