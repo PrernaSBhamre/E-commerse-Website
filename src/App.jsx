@@ -16,6 +16,9 @@ import Cart from "./components/Cart";
 import Footer from "./components/Footer";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
+import Profile from "./components/Profile";
+import Orders from "./components/Orders";
+import OrderDetails from "./components/OrderDetails";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./components/CartContext";
@@ -42,6 +45,9 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/:orderId" element={<OrderDetails />} />
 
             </Routes>
             <Footer />

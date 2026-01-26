@@ -38,105 +38,113 @@ This document provides a comprehensive overview of the technical architecture, t
 ## 🛠️ Page-wise Logic & Technical Details
 
 ### 1. Home Page (`Home.jsx`)
+- **Route**: `/`
 - **Role**: The main landing page that aggregates several high-impact components.
 - **Logic**: 
     - Composes `Hero`, `FlashSales`, `CategoryList`, `BestSelling`, `ExploreProducts`, and `NewArrival`.
     - Coordinates visual layout using Tailwind's grid and flexbox to maintain a professional "Exclusive" dashboard feel.
 
-- [ ] **All Products (`AllProducts.jsx`)**
-    - **Logic**: Slices the filtered array into chunks for faster rendering.
-    - **Filtering & Sorting Snippet**:
-      ```javascript
-      const filteredAndSortedProducts = products
-        .filter(product => {
-          const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-          const matchesCategory = !selectedCategory || 
-            (product.category && (typeof product.category === 'object' 
-                ? product.category._id === selectedCategory 
-                : product.category === selectedCategory));
-          return matchesSearch && matchesCategory;
-        })
-        .sort((a, b) => {
-          switch (sortBy) {
-            case 'price-low': return a.price - b.price;
-            case 'price-high': return b.price - a.price;
-            default: return new Date(b.createdAt) - new Date(a.createdAt);
-          }
-        });
-      ```
+### 2. All Products (`AllProducts.jsx`)
+- **Route**: `/all-products`
+- **Logic**: Fetches all products from the backend and implements client-side filtering and sorting.
+- **Filtering Logic**: Filters by search term and category.
+- **Sorting Logic**: Sorts by Price (High/Low) and Newest arrivals.
 
-- [ ] **Flash Sales (`FlashSales.jsx`)**
-    - **Logic**: Uses a `setInterval` to create a live countdown.
-    - **Countdown Logic Snippet**:
-      ```javascript
-      useEffect(() => {
-        const timer = setInterval(() => {
-          setTimeLeft((prev) => {
-            if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-            if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-            if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-            return prev;
-          });
-        }, 1000);
-        return () => clearInterval(timer);
-      }, []);
-      ```
+### 3. Flash Sales (`AllFlashSales.jsx`) & Best Sellers (`AllBestSellers.jsx`)
+- **Routes**: `/flash-sales`, `/best-sellers`
+- **Logic**: Specialized pages that fetch and display products based on their promotion status or sales volume.
 
-### 4. Product Detail (`ProductDetail.jsx`)
-- **Logic**: Manages product angles and variant selection.
-- **Price Formatting Snippet**:
-  ```javascript
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
-  ```
+### 4. About Page (`About.jsx`)
+- **Route**: `/about`
+- **Logic**: Displays company information, values, and team details using premium styling and micro-animations.
 
-### 5. Shopping Cart (`Cart.jsx`)
-- **Logic**: Leverages the `CartContext` for real-time updates.
-- **Cart Context Snippet**:
-  ```javascript
-  const { cartItems, updateQuantity, removeFromCart, cartTotal } = useCart();
-  // Derived state for professional summary
-  const totalAmount = cartTotal - discount + deliveryCharges;
-  ```
+### 5. Contact Page (`Contact.jsx`)
+- **Route**: `/contact`
+- **Logic**: Provides a contact form for user inquiries and displays company contact information.
 
-### 6. Checkout (`Checkout.jsx`)
-- **Logic**: Form validation and order finalization.
-- **Order Placement Snippet**:
-  ```javascript
-  const response = await axios.post('http://localhost:5000/api/orders', orderData, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  if (response.data.success) {
-    alert('Order placed successfully!');
-    navigate('/');
-  }
-  ```
+### 6. Wishlist Page (`wishlist.jsx`)
+- **Route**: `/wishlist`
+- **Logic**: Uses a custom hook `useFavorites` to manage and display user's favorite products.
+- **Micro-animations**: Uses `animate-fade-in-up` for smooth product entry.
 
-### 7. New Arrivals (`NewArrival.jsx`)
-- **Logic**: Targets the latest created items.
-- **Sorting Logic Snippet**:
-  ```javascript
-  // Backend query example
-  const newArrivals = await Product.find()
-    .sort({ createdAt: -1 })
-    .limit(4);
-  ```
+### 7. Manage Profile (`Profile.jsx`)
+- **Route**: `/profile`
+- **Logic**: 
+    - **Personal Info**: Permits users to update their Name, Email, and Address.
+    - **Security**: Includes a dedicated section for changing the account password with validation.
+    - **State Management**: Consumes `AuthContext` to display and sync user data.
+    - **Premium UI**: Uses a split-layout design with animated status cards and hover effects.
 
-### 8. Authentication (`auth.js` / `User.js`)
-- **Logic**: secure hashing and session control.
-- **Bcrypt Login Snippet**:
-  ```javascript
-  const validPass = await bcrypt.compare(req.body.password, user.password);
-  if (!validPass) return res.status(401).send("Invalid Credentials");
-  
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '1d' });
-  req.session.token = token; // Store in session
-  ```
+### 8. My Orders (`Orders.jsx`)
+- **Route**: `/orders`
+- **Logic**: 
+    - **Data Fetching**: Retrieves the authenticated user's order history using `GET /api/orders`.
+    - **Order Summary**: Displays order ID, placement date, total price, and shipping details.
+    - **Status Tracking**: Uses color-coded status indicators (pending, delivered, cancelled) for clear visibility.
+    - **Product Details**: Lists all items within an order with quantity and price details.
+    - **Professional UI**: Employs a clean, cards-based layout inspired by Amazon/Flipkart for high readability.
+
+### 9. Order Details (`OrderDetails.jsx`)
+- **Route**: `/orders/:orderId`
+- **Logic**: 
+    - **Data Retrieval**: Fetches all orders and filters for the specific ID (frontend-only logic).
+    - **Detailed View**: Provides an administrative breakdown including shipping address, payment status, and order total.
+    - **Inventory Breakdown**: Lists products with names, descriptions, and quantities.
+    - **Professional Design**: Adopts a minimalist, high-structure layout similar to Amazon.
+
+### 10. Product Detail (`ProductDetail.jsx`)
+- **Route**: `/product/:id`
+- **Logic**: Fetches individual product data based on the URL parameter.
+- **Dynamic Content**: Manages product images, variants, and descriptions.
+
+### 8. Category Detail (`CategoryDetail.jsx`) & Category Products (`CategoryProducts.jsx`)
+- **Routes**: `/category/:id`, `/categories/:categoryId/products`
+- **Logic**: Filters products based on specific categories or subcategories.
+
+### 9. Shopping Cart (`Cart.jsx`)
+- **Route**: `/cart`
+- **Logic**: Leverages the `CartContext` for real-time updates and persistence in `localStorage`.
+
+### 10. Checkout (`Checkout.jsx`)
+- **Route**: `/checkout/:id`
+- **Logic**: Handles order placement, address validation, and submission to the backend.
+
+### 11. Authentication (`Login.jsx`, `Signup.jsx`)
+- **Routes**: `/login`, `/signup`
+- **Logic**: 
+    - **Login**: Validates credentials and stores JWT in `localStorage` via `AuthContext`.
+    - **Signup**: Creates a new user account with role selection (User/Admin) and address details.
+    - **Theme**: Consistent Red/Black premium theme with animated backgrounds.
+
+---
+
+## 🛤️ Routing Table
+
+| Path | Component | Description |
+| :--- | :--- | :--- |
+| `/` | `Home` | Landing page |
+| `/about` | `About` | Company info |
+| `/contact` | `Contact` | Contact form |
+| `/all-products` | `AllProducts` | Full product catalog |
+| `/flash-sales` | `AllFlashSales` | Discounted items |
+| `/best-sellers` | `AllBestSellers` | Popular items |
+| `/wishlist` | `Wishlist` | Saved products |
+| `/orders` | `Orders` | User order history |
+| `/orders/:orderId` | `OrderDetails` | Detailed order summary |
+| `/product/:id` | `ProductDetail` | Single product view |
+| `/category/:id` | `CategoryDetail` | Category-specific view |
+| `/cart` | `Cart` | Shopping cart |
+| `/checkout/:id` | `Checkout` | Order entry |
+| `/login` | `Login` | User sign-in |
+| `/signup` | `Signup` | User registration |
+| `/profile` | `Profile` | Manage account & security |
+
+---
+
+## 🔐 Authentication Logic
+- **Bcrypt & JWT**: Secure password hashing and token-based sessions.
+- **Context API**: `AuthContext` provides global access to user state and login/logout methods.
+- **Axios Interceptor**: Often used to attach the JWT to every outgoing request for secure API access.
 
 ---
 

@@ -38,13 +38,13 @@ const Wishlist = () => {
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3">
               <span className="w-8 h-1 bg-red-600 rounded-full animate-pulse"></span>
-              <h2 className="text-red-600 font-bold text-sm tracking-widest uppercase">Your Favorites</h2>
+              <h2 className="text-red-600 font-semibold text-sm tracking-widest uppercase">Your Favorites</h2>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 leading-tight">My <span className="text-red-600">Wishlist</span></h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 leading-tight">My <span className="text-red-600">Wishlist</span></h1>
           </div>
           <div className="flex items-center gap-4 bg-white/50 backdrop-blur-sm p-4 rounded-xl border border-red-50">
-             <span className="text-gray-500 font-bold text-sm uppercase tracking-wider">Saved Items:</span>
-             <span className="text-2xl font-black text-red-600">{products.length}</span>
+             <span className="text-gray-500 font-semibold text-sm uppercase tracking-wider">Saved Items:</span>
+             <span className="text-2xl font-bold text-red-600">{products.length}</span>
           </div>
         </div>
 
@@ -65,11 +65,11 @@ const Wishlist = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col gap-4">
-                    <h3 className="font-bold text-base text-gray-800 line-clamp-2 group-hover:text-red-600 transition-colors uppercase tracking-tight">
+                    <h3 className="font-semibold text-base text-gray-800 line-clamp-2 group-hover:text-red-600 transition-colors uppercase tracking-tight">
                       {product.name}
                     </h3>
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl font-black text-red-600">{formatPrice(product.price)}</span>
+                      <span className="text-2xl font-bold text-red-600">{formatPrice(product.price)}</span>
                     </div>
                   </div>
                 </Link>
@@ -79,7 +79,7 @@ const Wishlist = () => {
                       addToCart(product);
                       alert(`${product.name} added to cart!`);
                     }}
-                    className="w-full bg-black hover:bg-red-600 text-white py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-500 flex items-center justify-center gap-3 shadow-sm hover:shadow-xl active:scale-95 group/btn"
+                    className="w-full bg-black hover:bg-red-600 text-white py-4 rounded-xl text-xs font-semibold uppercase tracking-widest transition-all duration-500 flex items-center justify-center gap-3 shadow-sm hover:shadow-xl active:scale-95 group/btn"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover/btn:scale-125 transition-transform duration-500">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
