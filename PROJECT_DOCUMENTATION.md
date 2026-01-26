@@ -43,47 +43,100 @@ This document provides a comprehensive overview of the technical architecture, t
     - Composes `Hero`, `FlashSales`, `CategoryList`, `BestSelling`, `ExploreProducts`, and `NewArrival`.
     - Coordinates visual layout using Tailwind's grid and flexbox to maintain a professional "Exclusive" dashboard feel.
 
-### 2. All Products (`AllProducts.jsx`)
-- **Logic**: 
-    - **Data Ingestion**: Fetches the entire product catalog via `axios.get('/api/products')`.
-    - **Filtering**: Implements real-time filtering using a `.filter()` function that checks both `searchTerm` and `selectedCategory`.
-    - **Sorting**: Uses a `sortBy` state to reorder the array based on price, rating, sales count, or creation date.
-    - **Pagination**: Slices the filtered array into chunks of 12 (using `indexOfFirstProduct` and `indexOfLastProduct`) for faster rendering.
+- [ ] **All Products (`AllProducts.jsx`)**
+    - **Logic**: Slices the filtered array into chunks for faster rendering.
+    - **Filtering & Sorting Snippet**:
+      ```javascript
+      const filteredAndSortedProducts = products
+        .filter(product => {
+          const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+          const matchesCategory = !selectedCategory || 
+            (product.category && (typeof product.category === 'object' 
+                ? product.category._id === selectedCategory 
+                : product.category === selectedCategory));
+          return matchesSearch && matchesCategory;
+        })
+        .sort((a, b) => {
+          switch (sortBy) {
+            case 'price-low': return a.price - b.price;
+            case 'price-high': return b.price - a.price;
+            default: return new Date(b.createdAt) - new Date(a.createdAt);
+          }
+        });
+      ```
 
-### 3. Flash Sales (`FlashSales.jsx` / `AllFlashSales.jsx`)
-- **Logic**: 
-    - **Backend Filtering**: Queries MongoDB for products where `flashSale.isActive` is true and `endTime` is in the future.
-    - **Frontend Countdown**: Uses a `setInterval` within a `useEffect` to update a `timeLeft` state every second, creating a live countdown experience.
+- [ ] **Flash Sales (`FlashSales.jsx`)**
+    - **Logic**: Uses a `setInterval` to create a live countdown.
+    - **Countdown Logic Snippet**:
+      ```javascript
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setTimeLeft((prev) => {
+            if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+            if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+            if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
+            return prev;
+          });
+        }, 1000);
+        return () => clearInterval(timer);
+      }, []);
+      ```
 
 ### 4. Product Detail (`ProductDetail.jsx`)
-- **Logic**: 
-    - **Dynamic Routing**: Uses `useParams()` to grab the product ID and fetch specific data on mount.
-    - **Interactive Gallery**: Manages a `selectedImage` state to switch between various product angles.
-    - **Variant Selection**: Tracks `selectedColor` and `selectedSize` for precise order placement.
-    - **Stateful Quantity**: Allows users to adjust the buying count before adding to cart or proceeding to checkout.
+- **Logic**: Manages product angles and variant selection.
+- **Price Formatting Snippet**:
+  ```javascript
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+  ```
 
 ### 5. Shopping Cart (`Cart.jsx`)
-- **Logic**: 
-    - **Multi-column Layout**: Adopts a professional "Amazon/Myntra" style with a main item list and a sticky sidebar summary.
-    - **Global Connection**: Leverages the `CartContext` to provide real-time updates to quantities and totals across the entire app.
-    - **Local Persistence**: Automatically syncs state with `localStorage` to prevent data loss on page refresh.
+- **Logic**: Leverages the `CartContext` for real-time updates.
+- **Cart Context Snippet**:
+  ```javascript
+  const { cartItems, updateQuantity, removeFromCart, cartTotal } = useCart();
+  // Derived state for professional summary
+  const totalAmount = cartTotal - discount + deliveryCharges;
+  ```
 
 ### 6. Checkout (`Checkout.jsx`)
-- **Logic**: 
-    - **Pre-fill Data**: Grabs product info (if direct buy) or cart info (if multi-item buy).
-    - **Form Validation**: Captures comprehensive billing details through a controlled React form.
-    - **Order Finalization**: Sends a consolidated payload to `POST /api/orders`, including shipping address, product array, and payment method choice (COD or Bank).
+- **Logic**: Form validation and order finalization.
+- **Order Placement Snippet**:
+  ```javascript
+  const response = await axios.post('http://localhost:5000/api/orders', orderData, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (response.data.success) {
+    alert('Order placed successfully!');
+    navigate('/');
+  }
+  ```
 
 ### 7. New Arrivals (`NewArrival.jsx`)
-- **Logic**: 
-    - **Sorting**: Specifically targets the most lately created items using MongoDB's `createdAt` timestamp.
-    - **Aesthetic Grid**: Uses a custom-engineered CSS grid to display a large featured product alongside smaller recent entries for visual hierarchy.
+- **Logic**: Targets the latest created items.
+- **Sorting Logic Snippet**:
+  ```javascript
+  // Backend query example
+  const newArrivals = await Product.find()
+    .sort({ createdAt: -1 })
+    .limit(4);
+  ```
 
-### 8. Authentication (`login.js` / `User.js`)
-- **Logic**: 
-    - **Security**: Passwords are never stored in plain text; `bcrypt` hashes them before saving.
-    - **Session Persistence**: Upon successful login, a JWT is generated and stored in a secure server-side session (supported by `connect-mongo`).
-    - **Middleware Protection**: Routes like `POST /api/orders` are protected by authentication middleware that verifies the user's token validity.
+### 8. Authentication (`auth.js` / `User.js`)
+- **Logic**: secure hashing and session control.
+- **Bcrypt Login Snippet**:
+  ```javascript
+  const validPass = await bcrypt.compare(req.body.password, user.password);
+  if (!validPass) return res.status(401).send("Invalid Credentials");
+  
+  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '1d' });
+  req.session.token = token; // Store in session
+  ```
 
 ---
 
