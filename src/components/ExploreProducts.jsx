@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from './CartContext';
+import FavoriteButton from './FavoriteButton';
+import { useFavorites } from '../hooks/useFavorites';
 
 const ExploreProducts = () => {
   const { addToCart } = useCart();
+  const { isFavorite } = useFavorites();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,11 +87,7 @@ const ExploreProducts = () => {
               <Link to={`/product/${product._id}`}>
                 <div className="bg-gray-50 h-[250px] relative flex items-center justify-center p-6 transition-colors duration-500 group-hover:bg-red-50/30 border-b border-gray-50 group-hover:border-red-100">
                   <div className="absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300 z-10">
-                        <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300 shadow-md border border-gray-100 hover:border-red-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                            </svg>
-                        </button>
+                        <FavoriteButton product={product} />
                   </div>
                   <img
                     src={product.images && product.images[0] ? product.images[0] : product.image}

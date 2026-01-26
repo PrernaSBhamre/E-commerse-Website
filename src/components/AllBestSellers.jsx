@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from './CartContext';
+import FavoriteButton from './FavoriteButton';
+import { useFavorites } from '../hooks/useFavorites';
 
 const AllBestSellers = () => {
   const { addToCart } = useCart();
+  const { isFavorite } = useFavorites();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -82,6 +85,9 @@ const AllBestSellers = () => {
                       <span className="bg-black text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg uppercase tracking-widest flex items-center gap-1.5">
                         <span className="text-red-500">🏆</span> {product.monthlySales || 0} SOLD
                       </span>
+                    </div>
+                    <div className={`absolute top-4 right-4 flex flex-col gap-2 ${isFavorite(product._id) ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'} group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 z-10`}>
+                      <FavoriteButton product={product} />
                     </div>
                     <img 
                       src={product.images?.[0] || product.image} 

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import FavoriteButton from './FavoriteButton';
+import { useFavorites } from '../hooks/useFavorites';
 
 const CategoryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isFavorite } = useFavorites();
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -158,9 +161,20 @@ const CategoryDetail = () => {
         {products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <div key={product._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                <h3 className="font-semibold text-lg text-gray-800">{product.name}</h3>
-                <p className="text-gray-600 mt-2">${product.price}</p>
+              <div key={product._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow group relative">
+                <div className="absolute top-2 right-2 z-10">
+                  <FavoriteButton product={product} />
+                </div>
+                <Link to={`/product/${product._id}`}>
+                  <img 
+                    src={product.images?.[0] || product.image || 'https://placehold.co/200x200?text=No+Image'} 
+                    alt={product.name}
+                    className="w-full h-32 object-cover rounded mb-3"
+                    onError={(e) => { e.target.src = 'https://placehold.co/200x200?text=No+Image'; }}
+                  />
+                  <h3 className="font-semibold text-lg text-gray-800 group-hover:text-red-600 transition-colors">{product.name}</h3>
+                  <p className="text-gray-600 mt-2">${product.price}</p>
+                </Link>
               </div>
             ))}
           </div>

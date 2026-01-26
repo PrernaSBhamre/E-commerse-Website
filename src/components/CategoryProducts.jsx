@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from './CartContext';
+import FavoriteButton from './FavoriteButton';
+import { useFavorites } from '../hooks/useFavorites';
 
 const CategoryProducts = () => {
   const { addToCart } = useCart();
+  const { isFavorite } = useFavorites();
   const { categoryId } = useParams();
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState(null);
@@ -77,6 +80,9 @@ const CategoryProducts = () => {
             <div key={product._id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group">
               <Link to={`/product/${product._id}`}>
                 <div className="relative h-48 overflow-hidden">
+                  <div className={`absolute top-3 right-3 z-10 ${isFavorite(product._id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-300`}>
+                    <FavoriteButton product={product} />
+                  </div>
                   <img 
                     src={product.images?.[0] || product.image || 'https://placehold.co/300x300?text=No+Image'} 
                     alt={product.name}

@@ -2,52 +2,33 @@ const jwt = require('jsonwebtoken');
 const User = require('../schemas/user');
 
 const protect = async (req, res, next) => {
+    
     let token;
-
-    // Check if authorization header exists and starts with 'Bearer'
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        try {
-            // Get token from header
-            token = req.headers.authorization.split(' ')[1];
-
-            // Verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            // Get user from token
-            req.user = await User.findById(decoded.id).select('-password');
-
-            if (!req.user) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'User not found'
-                });
-            }
-
-            next();
-        } catch (error) {
-            if (error.name === 'JsonWebTokenError') {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Not authorized, invalid token'
-                });
-            }
-            
-            if (error.name === 'TokenExpiredError') {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Token expired'
-                });
-            }
-
-            return res.status(401).json({
-                success: false,
-                message: 'Not authorized, token failed'
-            });
-        }
-    } else {
+    // Check for token in cookies
+    if (req.cookies && req.cookies.token) {
+        token = req.cookies.token;
+    }
+    // Check for token in Authorization header
+    else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
         return res.status(401).json({
             success: false,
-            message: 'Not authorized, no token provided'
+            message: 'Not authorized, token missing'
+        });
+    }
+    try {
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Attach user to request
+        req.user = await User.findById(decoded.id).select('-password');
+        next();
+    } catch (error) {
+        console.error('Auth middleware error:', error);
+        return res.status(401).json({
+            success: false,
+            message: 'Not authorized, token invalid'
         });
     }
 };

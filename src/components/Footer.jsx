@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -49,9 +50,9 @@ const Footer = () => {
             <ul className="text-sm text-gray-400 flex flex-col gap-3">
                 <li><a href="#" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">My Account</a></li>
                 <li><a href="#" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">Login / Register</a></li>
-                <li><a href="#" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">Cart</a></li>
-                <li><a href="#" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">Wishlist</a></li>
-                <li><a href="#" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">Shop</a></li>
+                <li><Link to="/cart" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">Cart</Link></li>
+                <li><Link to="/wishlist" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">Wishlist</Link></li>
+                <li><Link to="/all-products" className="hover:text-red-500 hover:translate-x-1 transition-all inline-block">Shop</Link></li>
             </ul>
         </div>
         

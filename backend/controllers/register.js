@@ -1,51 +1,46 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const User = require('../schemas/user');
-
-
+const bcrypt=require('bcrypt')
 module.exports.register = async (req, res) => {
     try {
-        const { name, email, password, role, address, createdAt } = req.body;
-        
+        const { name, email, password, role, address } = req.body;
+
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+        let user = await User.findOne({ email });
+        if (user) {
             return res.status(400).json({
-                message: "User with this email already exists"
+                success: false,
+                message: 'User already exists'
             });
         }
+        //hashing the password
+        const hash = await bcrypt.hash(password, 10);
         
-        // Hash the password
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        
-        // Create new user
-        const user = await User.create({
+        user = new User({
             name,
             email,
-            password: hashedPassword, // Store the hashed password
+            password: hash,
             role,
-            address,
-            createdAt
+            address
         });
-        
+    
+        await user.save();
 
-        
-        if (user) {
-            res.status(201).json({
-                message: "User created successfully",
-                userId: user._id
-            });
-        } else {
-            res.status(400).json({
-                message: "User creation failed"
-            });
-        }
+        // Return success response
+        return res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
     } catch (error) {
-
-        res.status(500).json({
-            message: "Server error during user registration",
-            error: error.message
+        console.error('Registration error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error'
         });
     }
 };
