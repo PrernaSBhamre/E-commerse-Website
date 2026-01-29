@@ -111,7 +111,7 @@ const OrderDetails = () => {
                 <div className={`w-2 h-2 rounded-full ${order.paymentstatus === 'paid' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                 <p className="capitalize font-semibold">{order.paymentstatus}</p>
               </div>
-              <p className="text-xs text-gray-500 italic">Method: Online Payment</p>
+              <p className="text-xs text-gray-500 italic">{order.paymentMethod}</p>
             </div>
           </div>
 

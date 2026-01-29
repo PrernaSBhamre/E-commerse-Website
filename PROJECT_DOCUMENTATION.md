@@ -96,6 +96,11 @@ This document provides a comprehensive overview of the technical architecture, t
 - **Route**: `/product/:id`
 - **Logic**: Fetches individual product data based on the URL parameter.
 - **Dynamic Content**: Manages product images, variants, and descriptions.
+- **Review Section**: Integrates `ReviewSection.jsx` which allows users to view and submit product reviews (ratings and comments). Features handled:
+    - Fetches reviews using `GET /api/reviews/product/:productId`.
+    - Submits reviews using `POST /api/reviews` (requires authentication).
+    - Prevents multiple reviews from the same user via backend validation.
+    - Synchronizes product ratings using `updateProductRatings` helper.
 
 ### 8. Category Detail (`CategoryDetail.jsx`) & Category Products (`CategoryProducts.jsx`)
 - **Routes**: `/category/:id`, `/categories/:categoryId/products`

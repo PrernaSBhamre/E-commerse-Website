@@ -128,6 +128,18 @@ const FlashSales = () => {
                     
                     <div className={`absolute top-3 right-3 flex flex-col gap-2 ${isFavorite(product._id) ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'} group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 z-10`}>
                       <FavoriteButton product={product} />
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addToCart(product);
+                          alert(`${product.name} added to cart!`);
+                        }}
+                        className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 shadow-md border border-gray-100 hover:border-black"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                        </svg>
+                      </button>
                       <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300 shadow-md border border-gray-100 hover:border-red-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -170,21 +182,6 @@ const FlashSales = () => {
                   </div>
                 </Link>
 
-                <div className="px-5 pb-5">
-                  {/* Add To Cart - Hidden by default, shown on hover */}
-                  <button 
-                    onClick={() => {
-                      addToCart(product);
-                      alert(`${product.name} added to cart!`);
-                    }}
-                    className="w-full bg-black hover:bg-red-600 text-white py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 group/addbtn shadow-sm hover:shadow-md"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:scale-110 transition-transform">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                    </svg>
-                    Add To Cart
-                  </button>
-                </div>
 
               </div>
             ))

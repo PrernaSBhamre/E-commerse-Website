@@ -68,7 +68,7 @@ const Checkout = () => {
                 shippingAddress: {
                     name: formData.firstName,
                     company: formData.companyName,
-                    address: formData.streetAddress,
+                    addressLine1: formData.streetAddress,
                     apartment: formData.apartment,
                     city: formData.city,
                     phone: formData.phone,

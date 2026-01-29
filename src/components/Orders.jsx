@@ -90,7 +90,7 @@ const Orders = () => {
                                         </div>
                                         <div className="hidden sm:block">
                                             <p className="text-gray-500 uppercase text-[10px] font-bold tracking-wider">Ship To</p>
-                                            <p className="text-gray-900 font-semibold truncate max-w-[150px]">{order.shippingAddress?.fullName || 'Self'}</p>
+                                            <p className="text-gray-900 font-semibold">{order.shippingAddress?.name || 'Self'}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">

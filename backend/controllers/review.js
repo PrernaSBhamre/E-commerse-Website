@@ -22,12 +22,15 @@ module.exports.createReview = async (req, res) => {
         }
 
         // Create new review
-        const review = await Review.create({
+        let review = await Review.create({
             user: userId,
             product,
             rating,
             comment
         });
+
+        // Populate user name for immediate display in frontend
+        review = await review.populate('user', 'name');
 
         // Update product ratings
         await updateProductRatings(product);
