@@ -162,7 +162,7 @@ const OrderDetails = () => {
                         </div>
                     </div>
                     <div className="flex flex-col gap-2 min-w-[150px]">
-                        <button className="w-full bg-red-600 text-white text-[11px] font-bold py-2 rounded hover:bg-red-700 transition-colors">Write a product review</button>
+                        <Link to={`/product/${item.product?._id}`} className="w-full bg-red-600 text-white text-[11px] font-bold py-2 rounded hover:bg-red-700 transition-colors text-center inline-block">Write a product review</Link>
                         <button className="w-full bg-white border border-gray-300 text-gray-700 text-[11px] font-bold py-2 rounded hover:bg-gray-50 transition-colors">Archive Order</button>
                     </div>
                 </div>

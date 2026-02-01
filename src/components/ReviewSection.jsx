@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const ReviewSection = ({ productId }) => {
+    const { user } = useAuth();
     const [reviews, setReviews] = useState([]);
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
+    const [editingReviewId, setEditingReviewId] = useState(null);
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -38,18 +42,37 @@ const ReviewSection = ({ productId }) => {
 
         try {
             setSubmitting(true);
-            const response = await api.post('/reviews', {
-                product: productId,
-                rating,
-                comment
-            });
+            
+            if (editingReviewId) {
+                // Update existing review
+                const response = await api.put(`/reviews/${editingReviewId}`, {
+                    rating,
+                    comment
+                });
 
-            if (response.data.success) {
-                // If the user already reviewed, the backend returns 400 which is caught by the catch block
-                setReviews([response.data.data, ...reviews]);
-                setComment('');
-                setRating(5);
-                alert('Review submitted successfully!');
+                if (response.data.success) {
+                    setReviews(reviews.map(review => 
+                        review._id === editingReviewId ? response.data.data : review
+                    ));
+                    setComment('');
+                    setRating(5);
+                    setEditingReviewId(null);
+                    alert('Review updated successfully!');
+                }
+            } else {
+                // Create new review
+                const response = await api.post('/reviews', {
+                    product: productId,
+                    rating,
+                    comment
+                });
+
+                if (response.data.success) {
+                    setReviews([response.data.data, ...reviews]);
+                    setComment('');
+                    setRating(5);
+                    alert('Review submitted successfully!');
+                }
             }
         } catch (err) {
             console.error('Error submitting review:', err);
@@ -59,6 +82,48 @@ const ReviewSection = ({ productId }) => {
         }
     };
 
+    const handleEdit = (review) => {
+        setEditingReviewId(review._id);
+        setRating(review.rating);
+        setComment(review.comment);
+        // Scroll to form
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Simplified scroll, might want to target the form specific
+    };
+
+    const handleDelete = async (reviewId) => {
+        if (!window.confirm('Are you sure you want to delete this review?')) return;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please login to delete a review');
+            return;
+        }
+
+        try {
+            const response = await api.delete(`/reviews/${reviewId}`);
+            if (response.data.success) {
+                setReviews(reviews.filter(review => review._id !== reviewId));
+                alert('Review deleted successfully');
+                
+                // If we were editing this review, clear the form
+                if (editingReviewId === reviewId) {
+                    setEditingReviewId(null);
+                    setComment('');
+                    setRating(5);
+                }
+            }
+        } catch (err) {
+            console.error('Error deleting review:', err);
+            alert(err.response?.data?.message || 'Failed to delete review');
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingReviewId(null);
+        setComment('');
+        setRating(5);
+    };
+
     if (loading) return <div className="mt-10">Loading reviews...</div>;
 
     return (
@@ -66,8 +131,20 @@ const ReviewSection = ({ productId }) => {
             <h2 className="text-2xl font-bold mb-8 text-black">Customer Reviews</h2>
             
             {/* Review Form */}
-            <div className="bg-gray-50 p-6 rounded-lg mb-10">
-                <h3 className="text-lg font-bold mb-4 text-black">Write a Review</h3>
+            <div className="bg-gray-50 p-6 rounded-lg mb-10" id="review-form">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-bold text-black">
+                        {editingReviewId ? 'Edit Your Review' : 'Write a Review'}
+                    </h3>
+                    {editingReviewId && (
+                        <button 
+                            onClick={handleCancelEdit}
+                            className="text-gray-500 hover:text-gray-700 text-sm underline"
+                        >
+                            Cancel Edit
+                        </button>
+                    )}
+                </div>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <div className="flex items-center gap-4">
                         <label className="font-medium">Rating:</label>
@@ -105,7 +182,7 @@ const ReviewSection = ({ productId }) => {
                         disabled={submitting}
                         className={`bg-[#DB4444] text-white py-3 px-8 rounded-sm font-medium self-start hover:bg-red-700 transition-colors ${submitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
-                        {submitting ? 'Submitting...' : 'Submit Review'}
+                        {submitting ? 'Processing...' : (editingReviewId ? 'Update Review' : 'Submit Review')}
                     </button>
                 </form>
             </div>
@@ -131,11 +208,35 @@ const ReviewSection = ({ productId }) => {
                                                 </svg>
                                             ))}
                                         </div>
+                                        </div>
                                     </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-gray-400 text-sm">
+                                        {new Date(review.createdAt).toLocaleDateString()}
+                                    </span>
+                                    {user?.id === review.user?._id && (
+                                    <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => handleEdit(review)}
+                                            className="text-blue-500 hover:text-blue-700 p-1 rounded hover:bg-blue-50 transition-colors"
+                                            title="Edit Review"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                                                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                                            </svg>
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDelete(review._id)}
+                                            className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                                            title="Delete Review"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                                                <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    )}
                                 </div>
-                                <span className="text-gray-400 text-sm">
-                                    {new Date(review.createdAt).toLocaleDateString()}
-                                </span>
                             </div>
                             <p className="text-gray-700 leading-relaxed">{review.comment}</p>
                         </div>
