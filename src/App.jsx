@@ -19,6 +19,7 @@ import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Orders from "./components/Orders";
 import OrderDetails from "./components/OrderDetails";
+import SearchResults from "./components/SearchResults";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./components/CartContext";
@@ -48,6 +49,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/orders/:orderId" element={<OrderDetails />} />
+              <Route path="/search" element={<SearchResults />} />
 
             </Routes>
             <Footer />

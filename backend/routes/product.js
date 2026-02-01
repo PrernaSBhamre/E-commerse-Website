@@ -6,9 +6,13 @@ const {
     getAllProducts,
     getProductById,
     getProductsByCategory,
+
+
+
+    deleteProduct,
+    searchProducts,
     createProduct,
-    updateProduct,
-    deleteProduct
+    updateProduct
 } = require('../controllers/product');
 const AsyncHandler = require('../middleware/AsyncHandler');
 const { protect, authorize } = require('../middleware/auth');
@@ -24,8 +28,13 @@ router.get('/flash-sales', AsyncHandler(getActiveFlashSales));
 // GET Monthly Best Sellers
 router.get('/best-sellers', AsyncHandler(getMonthlyBestSellers));
 
+
+
 // GET New Arrival Products
 router.get('/new-arrivals', AsyncHandler(getNewArrivals));
+
+// Search Products
+router.get('/search', AsyncHandler(searchProducts));
 
 // Public routes (no authentication required)
 router.route('/')

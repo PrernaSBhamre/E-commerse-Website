@@ -269,3 +269,42 @@ module.exports.deleteProduct = async (req, res) => {
         });
     }
 };
+
+// Search products
+module.exports.searchProducts = async (req, res) => {
+    try {
+        const { q } = req.query;
+        
+        if (!q) {
+            return res.status(400).json({
+                success: false,
+                message: 'Search query is required'
+            });
+        }
+
+        // Create regex for case-insensitive search
+        const regex = new RegExp(q, 'i');
+
+        const products = await Product.find({
+            $or: [
+                { name: { $regex: regex } },
+                { description: { $regex: regex } },
+                { 'category.name': { $regex: regex } } // Assuming you might want to search categories too, but requires lookups if category is ObjectId. For now, simple fields.
+            ]
+        })
+        .populate('category')
+        .select('-__v');
+
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            data: products
+        });
+    } catch (error) {
+        console.error('Search error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during search'
+        });
+    }
+};

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from "./CartContext";
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +11,8 @@ const Navbar = () => {
   const { cartCount } = useCart();
   const { favorites } = useFavorites();
   const { isAuthenticated, logout, user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
   
   const favoritesCount = useMemo(() => {
     return Object.keys(favorites).length;
@@ -33,6 +35,15 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setAccountDropdownOpen(false);
+  };
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter') {
+        if (searchTerm.trim()) {
+            navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+            setMenuOpen(false); // Close mobile menu if open
+        }
+    }
   };
 
   return (
@@ -90,8 +101,11 @@ const Navbar = () => {
                       type="text"
                       placeholder="What are you looking for?"
                       className="bg-transparent text-[12px] w-full focus:outline-none placeholder-black/50 text-black pr-8"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={handleSearch}
                     />
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-black absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-black absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer" onClick={() => searchTerm.trim() && navigate(`/search?q=${encodeURIComponent(searchTerm)}`)}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
                 </div>
@@ -243,6 +257,9 @@ const Navbar = () => {
                       type="text"
                       placeholder="What are you looking for?"
                       className="bg-gray-100 rounded py-2 px-4 w-full text-sm focus:outline-none"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={handleSearch}
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-black absolute right-3 top-1/2 -translate-y-1/2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
